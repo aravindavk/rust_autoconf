@@ -1,0 +1,13 @@
+[Unit]
+Description=MyService
+After=syslog.target network.target
+ 
+[Service]
+Type=simple
+ExecStart=@SBINDIR@/myserviced
+ExecReload=/bin/kill -SIGUSR2 $MAINPID
+Restart=on-failure
+LimitNOFILE=10000
+ 
+[Install]
+WantedBy=multi-user.target

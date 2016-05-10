@@ -1,0 +1,28 @@
+CWD := $(shell pwd)
+TARDIR := myservice-@VERSION@
+RPMBUILD := $(HOME)/rpmbuild
+
+devbuild:
+	cargo build
+
+build:
+	cargo build --release
+
+dist:
+	@rm -fr ./dist
+	mkdir -p ./dist/$(TARDIR)
+	rsync -r --exclude .git/ --exclude dist/ --exclude target/ $(CWD)/ ./dist/$(TARDIR)
+	cd ./dist/; tar -zcf $(TARDIR).tar.gz $(TARDIR);
+
+install: build
+	install -d $(DESTDIR)@SBINDIR@
+	install -d ${DESTDIR}/usr/lib/systemd/system/
+	install -m 755 ./target/release/myservice ${DESTDIR}@SBINDIR@/myserviced
+	install -m 0644 ./myserviced.service ${DESTDIR}/usr/lib/systemd/system/myserviced.service
+
+rpm: dist
+	rm -rf $(RPMBUILD)/SOURCES/myservice*
+	rm -rf $(RPMBUILD)/BUILD/myservice*
+	mkdir -p $(RPMBUILD)/SOURCES
+	cp ./dist/myservice-@VERSION@.tar.gz $(RPMBUILD)/SOURCES; \
+	rpmbuild -ba myservice.spec

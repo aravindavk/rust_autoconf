@@ -1,0 +1,7 @@
+[package]
+name = "myservice"
+version = "0.1.0"
+authors = ["Aravinda VK <mail@aravindavk.in>"]
+
+[dependencies]
+iron = "*"

@@ -1,0 +1,45 @@
+%define debug_package %{nil}
+%define pkg_name myservice
+%define pkg_version @VERSION@
+%define pkg_release 1
+ 
+Name: myservice
+Version: %{pkg_version}
+Release: %{pkg_release}%{?dist}
+Summary: My Service
+Source0: %{pkg_name}-%{pkg_version}.tar.gz
+License: MIT
+Group: Applications/Storage
+BuildRoot: %{_tmppath}/%{pkg_name}-%{pkg_version}-%{pkg_release}-buildroot
+Url: github.com/aravindavk/rust_autoconf
+ 
+%description
+My Service
+ 
+# BuildRequires: rust
+ 
+%prep
+%setup -n %{pkg_name}-%{pkg_version}
+ 
+%build
+autoconf && %configure
+make
+ 
+%install
+rm -rf $RPM_BUILD_ROOT
+make install DESTDIR=$RPM_BUILD_ROOT PREFIX=/usr
+ 
+%post
+ 
+%preun
+ 
+%clean
+rm -rf "$RPM_BUILD_ROOT"
+ 
+%files
+%attr(0755, root, root) %{_sbindir}/myserviced
+%{_unitdir}/myserviced.service
+ 
+%changelog
+* Mon Apr 11 2016 <mail@aravindavk.in>
+- Initial Build
